@@ -1,0 +1,578 @@
+import { Component, OnInit } from '@angular/core';
+import { ProductService } from 'shared/services/product.service';
+import { ActivatedRoute } from '@angular/router';
+import { Product } from 'shared/models/product';
+import 'rxjs/add/operator/switchMap';
+import { ShoppingCartService } from 'shared/services/shopping-cart.service';
+import { Subscription, Observable } from 'rxjs';
+import { ShoppingCart } from 'shared/models/shopping-cart';
+import { CategoryService } from 'shared/services/category.service';
+import {Http} from '@angular/http';
+
+export interface Food {
+  value: string;
+  viewValue: string;
+}
+@Component({
+  selector: 'app-products',
+  templateUrl: './products.component.html',
+  styleUrls: ['./products.component.css']
+})
+export class ProductsComponent implements OnInit {
+  products: any[] = [];
+  filteredProducts: Product[] = [];
+  category: string;
+  cart$: Observable<ShoppingCart>;
+  Cities;
+  Prices;
+  Relatives;
+  Within;
+  allProducts;
+  selectedCategory = "All";
+  selectedPrice = "All";
+  categories$;
+  Categories:any[];
+  posts:any[];
+  product :any = {
+    title: '',
+    price: '',
+    category: '',
+    imageUrl: ''
+  };
+
+  constructor(
+    private route: ActivatedRoute,
+    private productService: ProductService,
+    private categoryService: CategoryService,
+    private http:Http,
+    private shoppingCartService: ShoppingCartService
+  ) {
+    // this.categories$ = categoryService.getAll();
+    //   http.get('http://localhost:8080/api/item/categories').subscribe(response => {
+    //   console.log(response);
+    //   this.Categories = response.json();
+    //   this.Categories.unshift('All');
+    // })
+    this.filteredProducts = 
+    [
+      {
+        "id": 8,
+        "itemName": "building",
+        "itemDescription": "New Test House",
+        "price": 120000,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Pisgah_Home_Historic_District%2C_Highland_Park.JPG",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "HOUSING",
+        "active": true,
+        "city": "Cedar_Rapids",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 16,
+        "itemName": "Phone",
+        "itemDescription": "New Test Phone",
+        "price": 1200,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Black-android-phone.svg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "ELECTRONICS",
+        "active": true,
+        "city": "Sioux_City",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 7,
+        "itemName": "building",
+        "itemDescription": "New Test House",
+        "price": 900566,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Pisgah_Home_Historic_District%2C_Highland_Park.JPG",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "HOUSING",
+        "active": true,
+        "city": "Ames",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 12,
+        "itemName": "Phone",
+        "itemDescription": "New Test Phone",
+        "price": 2100,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Black-android-phone.svg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "ELECTRONICS",
+        "active": true,
+        "city": "Waterloo",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 13,
+        "itemName": "Phone",
+        "itemDescription": "New Test Phone",
+        "price": 2000,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Black-android-phone.svg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "ELECTRONICS",
+        "active": true,
+        "city": "Waterloo",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 100,
+        "itemName": "T-shirt",
+        "itemDescription": "hgvjbhm jhbjnb nbjhnm",
+        "price": 50,
+        "likes": 0,
+        "photosURL": "F:\\Projects\\java-projects\\MPP-Project\\buy-and-sell-ui\\BuyAndSell-UI\\src\\assets\\5710531950_1_1_3.jpg",
+        "createdTime": "2019-10-13T03:46:21.842+0000",
+        "expiryDate": null,
+        "category": "HOUSING",
+        "active": false,
+        "city": "Marshalltown",
+        "user": {
+          "id": 58,
+          "firstName": "Ahmed",
+          "lastName": "Fares",
+          "email": "ahmed.fares101@gmail.com",
+          "address": null,
+          "mobile": null,
+          "whatsapp": null,
+          "active": null,
+          "blocked": null,
+          "password": "123",
+          "seller": null,
+          "buyer": null,
+          "token": "0472a824-a29d-4ac3-ae16-f39172be69e9",
+          "createdDate": null,
+          "admin": true
+        },
+        "comments": []
+      },
+      {
+        "id": 15,
+        "itemName": "Phone",
+        "itemDescription": "New Test Phone",
+        "price": 1250,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Black-android-phone.svg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "ELECTRONICS",
+        "active": true,
+        "city": "Sioux_City",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 1,
+        "itemName": "ford car",
+        "itemDescription": "ford",
+        "price": 25000,
+        "likes": 12,
+        "photosURL": "https://cdn.pixabay.com/photo/2017/03/05/15/29/aston-2118857_960_720.jpg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "CAR",
+        "active": true,
+        "city": "Cedar_Rapids",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 4,
+        "itemName": "Hundai",
+        "itemDescription": "New Test Car",
+        "price": 26000,
+        "likes": 6,
+        "photosURL": "https://cdn.motor1.com/images/mgl/17XG3/s1/bugatti-la-voiture-noire-leaves-geneva.jpg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "CAR",
+        "active": true,
+        "city": "Davenport",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 9,
+        "itemName": "building",
+        "itemDescription": "New Test House",
+        "price": 130000,
+        "likes": 25,
+        "photosURL": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSGMVgHlgHVFZrHP5VNHAIsHX9pCKhGLyXs3QKvgeZYU7dKRlBmsMg7DXhPnF6u1eCjPS6mTkgSkrgFfSPDChn7DhY0eWJkkpvs_Ly0Uq9N&usqp=CAc",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "HOUSING",
+        "active": true,
+        "city": "Davenport",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 10,
+        "itemName": "building",
+        "itemDescription": "New Test House",
+        "price": 123544,
+        "likes": 25,
+        "photosURL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3eg_sWa5V4Ee8vO_C_Hz7FZgIULeDKyRpXl7Yfz7Jf5WWPBAeGQ",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "HOUSING",
+        "active": true,
+        "city": "Iowa_City",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 11,
+        "itemName": "building",
+        "itemDescription": "New Test House",
+        "price": 123454,
+        "likes": 25,
+        "photosURL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQN7YfqtBBks8e7n9CCUZjJvGcnLQ1tJmJcQasHakt1n9GWRZaq",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "HOUSING",
+        "active": true,
+        "city": "Iowa_City",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 97,
+        "itemName": "title",
+        "itemDescription": "dessc",
+        "price": 50,
+        "likes": 0,
+        "photosURL": "F:\\Projects\\java-projects\\MPP-Project\\buy-and-sell-ui\\BuyAndSell-UI\\src\\assets\\5710531950_1_1_3.jpg",
+        "createdTime": "2019-09-16T21:46:29.537+0000",
+        "expiryDate": null,
+        "category": "SPORTS",
+        "active": false,
+        "city": "Iowa_City",
+        "user": {
+          "id": 58,
+          "firstName": "Ahmed",
+          "lastName": "Fares",
+          "email": "ahmed.fares101@gmail.com",
+          "address": null,
+          "mobile": null,
+          "whatsapp": null,
+          "active": null,
+          "blocked": null,
+          "password": "123",
+          "seller": null,
+          "buyer": null,
+          "token": "0472a824-a29d-4ac3-ae16-f39172be69e9",
+          "createdDate": null,
+          "admin": true
+        },
+        "comments": []
+      },
+      {
+        "id": 21,
+        "itemName": "Ball",
+        "itemDescription": "New Test Ball",
+        "price": 99,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Soccer_ball.svg/768px-Soccer_ball.svg.png",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "SPORTS",
+        "active": true,
+        "city": "Ankeny",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 6,
+        "itemName": "Hundai",
+        "itemDescription": "New Test Car",
+        "price": 14500,
+        "likes": 18,
+        "photosURL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyP9IpbhynPLVLnyP33b-bgCcWJKKrk5fcVEfDYT_vl4MNaF4W",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "CAR",
+        "active": true,
+        "city": "West_Des_Moines",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 28,
+        "itemName": "Movie",
+        "itemDescription": "New Test Movie",
+        "price": 1350,
+        "likes": 15,
+        "photosURL": "https://cdn.pixabay.com/photo/2019/04/24/19/56/movie-4152982_960_720.jpg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "MOVIE",
+        "active": true,
+        "city": "Iowa_City",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 24,
+        "itemName": "Movie",
+        "itemDescription": "New Test Movie",
+        "price": 950,
+        "likes": 15,
+        "photosURL": "https://cdn.pixabay.com/photo/2019/04/24/19/56/movie-4152982_960_720.jpg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "MOVIE",
+        "active": true,
+        "city": "Marion",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 29,
+        "itemName": "Movie",
+        "itemDescription": "New Test Movie",
+        "price": 1400,
+        "likes": 15,
+        "photosURL": "https://cdn.pixabay.com/photo/2019/04/24/19/56/movie-4152982_960_720.jpg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "MOVIE",
+        "active": true,
+        "city": "Mason_City",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 25,
+        "itemName": "Movie",
+        "itemDescription": "New Test Movie",
+        "price": 1856,
+        "likes": 15,
+        "photosURL": "https://cdn.pixabay.com/photo/2019/04/24/19/56/movie-4152982_960_720.jpg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "MOVIE",
+        "active": true,
+        "city": "West_Des_Moines",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 27,
+        "itemName": "Movie",
+        "itemDescription": "New Test Movie",
+        "price": 1540,
+        "likes": 15,
+        "photosURL": "https://cdn.pixabay.com/photo/2019/04/24/19/56/movie-4152982_960_720.jpg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "MOVIE",
+        "active": true,
+        "city": "Dubuque",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 14,
+        "itemName": "Phone",
+        "itemDescription": "New Test Phone",
+        "price": 1354,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Black-android-phone.svg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "ELECTRONICS",
+        "active": true,
+        "city": "Ames",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 23,
+        "itemName": "Movie",
+        "itemDescription": "New Test Movie",
+        "price": 1150,
+        "likes": 15,
+        "photosURL": "https://cdn.pixabay.com/photo/2019/04/24/19/56/movie-4152982_960_720.jpg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "MOVIE",
+        "active": true,
+        "city": "Cedar_Rapids",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 19,
+        "itemName": "Ball",
+        "itemDescription": "New Test Ball",
+        "price": 125,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Soccer_ball.svg/768px-Soccer_ball.svg.png",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "SPORTS",
+        "active": true,
+        "city": "Cedar_Falls",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 22,
+        "itemName": "Movie",
+        "itemDescription": "New Test Movie",
+        "price": 1423,
+        "likes": 15,
+        "photosURL": "https://cdn.pixabay.com/photo/2019/04/24/19/56/movie-4152982_960_720.jpg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "MOVIE",
+        "active": true,
+        "city": "Dubuque",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 20,
+        "itemName": "Ball",
+        "itemDescription": "New Test Ball",
+        "price": 120,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Soccer_ball.svg/768px-Soccer_ball.svg.png",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "SPORTS",
+        "active": true,
+        "city": "Council_Bluffs",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 18,
+        "itemName": "Ball",
+        "itemDescription": "New Test Ball",
+        "price": 134,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Soccer_ball.svg/768px-Soccer_ball.svg.png",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "SPORTS",
+        "active": true,
+        "city": "Council_Bluffs",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 26,
+        "itemName": "Movie",
+        "itemDescription": "New Test Movie",
+        "price": 1760,
+        "likes": 15,
+        "photosURL": "https://cdn.pixabay.com/photo/2019/04/24/19/56/movie-4152982_960_720.jpg",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "MOVIE",
+        "active": true,
+        "city": "Ames",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 17,
+        "itemName": "Ball",
+        "itemDescription": "New Test Ball",
+        "price": 78,
+        "likes": 25,
+        "photosURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Soccer_ball.svg/768px-Soccer_ball.svg.png",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "SPORTS",
+        "active": true,
+        "city": "Ankeny",
+        "user": null,
+        "comments": []
+      },
+      {
+        "id": 3,
+        "itemName": "Hundai",
+        "itemDescription": "New Test Car",
+        "price": 22000,
+        "likes": 6,
+        "photosURL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlosHA0-9vn43zDNmqA85-ps6Qur8jhfihPVUaP2y7xvzSbLOT",
+        "createdTime": "2019-09-15T06:09:26.221+0000",
+        "expiryDate": null,
+        "category": "CAR",
+        "active": true,
+        "city": "West_Des_Moines",
+        "user": null,
+        "comments": []
+      }
+    ]
+    // http.get('http://localhost:8080/api/item/').subscribe(response => {
+    //   console.log(response);
+    //   this.filteredProducts = response.json();
+    //   this.allProducts = this.filteredProducts.slice();
+    // })
+    this.Cities = [
+      {id:0,Name:'All'},
+      {id:1,Name:'FairField'},
+      {id:2,Name:'Des Moines'},
+      {id:3,Name:'Iowa City'}
+    ]
+    this.Categories = [
+      'All',
+      'Cars',
+      'Buildings',
+      'Accessories'
+    ]
+    this.Prices = [
+      {id:0,Name:'All'},
+      {id:1,Name:'less than 1000$'},
+      {id:2,Name:'less than 10000$'},
+      {id:3,Name:'less than 100000$'},
+      {id:4,Name:'less than 500000$'}
+    ]
+    this.Relatives = [
+      {id:0,Name:'All'},
+      {id:1,Name:'Most Recent'},
+      {id:2,Name:'Low Price'},
+      {id:3,Name:'High Price'},
+      {id:3,Name:'Closest Area'}
+    ]
+    this.Within = [
+      {id:0,Name:'All'},
+      {id:1,Name:'The last 24 hours'},
+      {id:2,Name:'The last 7 days'},
+      {id:3,Name:'The last 30 days'}
+    ]
+  }
+
+  async ngOnInit() {
+    this.cart$ = await this.shoppingCartService.getCart();
+    //this.populateProducts();
+  }
+filterByCat()
+{
+    //alert(this.selectedPrice);
+    let price = (parseInt(this.selectedPrice) == 1)?1000:(parseInt(this.selectedPrice) == 2)?10000:(parseInt(this.selectedPrice) == 3)?100000:500000;
+    this.filteredProducts = this.allProducts.filter(x=>
+    ((x.category == this.selectedCategory)||(this.selectedCategory == "All"))&&
+    ((x.price < price)||(this.selectedPrice == "All"))
+    );
+}
+}
