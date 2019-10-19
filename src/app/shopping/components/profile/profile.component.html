@@ -1,0 +1,28 @@
+<h2>Profile</h2>
+  <form class="form-group" #f="ngForm" (ngSubmit)="loginUser(f.value)" *ngIf="!loginShow" class="login-form">
+<div class="row">
+   <div class="col-md-3 pull-right">Email</div> 
+   <div class="col-md-6">
+    <input class="form-control" id="email"[(ngModel)]="user.email" name="email" type="text" placeholder="username" required/>
+   </div> 
+</div>
+<div class="row">
+  <div class="col-md-3 pull-right">Password</div> 
+  <div class="col-md-6">
+    <input class="form-control" id="pass" [(ngModel)]="user.password" name="password" type="password" placeholder="password" required/>
+  </div> 
+</div>
+<div class="row">
+  <div class="col-md-3 pull-right">First Name</div> 
+  <div class="col-md-6">
+    <input class="form-control" id="firstName"[(ngModel)]="user.firstName" name="firstName" type="text" placeholder="firstname" required/>
+  </div> 
+</div>
+<div class="row">
+  <div class="col-md-3 pull-right">Last Name</div> 
+  <div class="col-md-6">
+    <input class="form-control" id="lastName"[(ngModel)]="user.lastName" name="lastName" type="text" placeholder="lastName" required/>
+  </div> 
+</div>
+    <button class="btn btn-primary pull-right">Edit Profile</button>
+  </form>

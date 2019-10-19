@@ -1,3 +1,4 @@
+import { ProfileComponent } from './components/profile/profile.component';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from 'shared/services/auth-guard.service';
@@ -20,7 +21,8 @@ import { ShoppingCartComponent } from './components/shopping-cart/shopping-cart.
       { path: 'shopping-cart', component: ShoppingCartComponent },
       { path: 'check-out', component: CheckOutComponent, canActivate: [AuthGuard] },
       { path: 'order-success/:id', component: OrderSuccessComponent, canActivate: [AuthGuard] },
-      { path: 'my/orders', component: MyOrdersComponent, canActivate: [AuthGuard] }
+      { path: 'my/orders', component: MyOrdersComponent, canActivate: [AuthGuard] },
+      { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] }
     ])
   ],
   declarations: [
@@ -29,6 +31,7 @@ import { ShoppingCartComponent } from './components/shopping-cart/shopping-cart.
     CheckOutComponent,
     OrderSuccessComponent,
     MyOrdersComponent,
+    ProfileComponent,
     ProductFilterComponent,
     ShoppingCartSummaryComponent,
     ShippingFormComponent
